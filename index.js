@@ -10,6 +10,7 @@ const fs = require('fs').promises;
 const MarkdownIt = require('markdown-it');
 const md = new MarkdownIt();
 const figlet = require('figlet');
+const dotenv = require('dotenv');
 
 const program = new Command();
 
@@ -57,157 +58,138 @@ const languageOptions = {
   javascript: {
     name: 'JavaScript',
     sections: ['Frontend', 'Backend', 'Fullstack', 'Data Structures', 'Algorithms'],
-    fileTemplates: {
-      Frontend: {
-        files: [
-          { name: 'index.html', content: '<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Exercise</title>\n    <link rel="stylesheet" href="styles.css">\n</head>\n<body>\n    <div id="app"></div>\n    <script src="script.js"></script>\n</body>\n</html>' },
-          { name: 'styles.css', content: '/* Add your styles here */\n' },
-          { name: 'script.js', content: '// Add your JavaScript code here\n' }
-        ]
-      },
-      Backend: {
-        files: [
-          { name: 'server.js', content: 'const express = require(\'express\');\nconst app = express();\n\napp.use(express.json());\n\n// Add your routes here\n\nconst PORT = process.env.PORT || 3000;\napp.listen(PORT, () => console.log(`Server running on port ${PORT}`));' },
-          { name: 'package.json', content: '{\n  "name": "exercise",\n  "version": "1.0.0",\n  "main": "server.js",\n  "dependencies": {\n    "express": "^4.17.1"\n  }\n}' }
-        ]
-      },
-      Fullstack: {
-        files: [
-          { name: 'frontend/index.html', content: '<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Exercise</title>\n    <link rel="stylesheet" href="styles.css">\n</head>\n<body>\n    <div id="app"></div>\n    <script src="script.js"></script>\n</body>\n</html>' },
-          { name: 'frontend/styles.css', content: '/* Add your styles here */\n' },
-          { name: 'frontend/script.js', content: '// Add your JavaScript code here\n' },
-          { name: 'backend/server.js', content: 'const express = require(\'express\');\nconst app = express();\n\napp.use(express.json());\n\n// Add your routes here\n\nconst PORT = process.env.PORT || 3000;\napp.listen(PORT, () => console.log(`Server running on port ${PORT}`));' }
-        ]
-      }
-    }
+    template: '// Add your JavaScript code here\n',
+    filename: 'script.js'
   },
   python: {
     name: 'Python',
     sections: ['Backend', 'Data Science', 'Algorithms', 'Machine Learning', 'Web Development'],
-    fileTemplates: {
-      Backend: {
-        files: [
-          { name: 'app.py', content: 'from flask import Flask\n\napp = Flask(__name__)\n\n@app.route("/")\ndef hello():\n    return "Hello, World!"\n\nif __name__ == "__main__":\n    app.run(debug=True)' },
-          { name: 'requirements.txt', content: 'flask==2.0.1\n' }
-        ]
-      },
-      'Data Science': {
-        files: [
-          { name: 'analysis.py', content: 'import pandas as pd\nimport numpy as np\n\n# Add your data analysis code here\n' },
-          { name: 'requirements.txt', content: 'pandas==1.3.3\nnumpy==1.21.2\n' }
-        ]
-      },
-      'Machine Learning': {
-        files: [
-          { name: 'model.py', content: 'import tensorflow as tf\nimport numpy as np\n\n# Add your ML model code here\n' },
-          { name: 'requirements.txt', content: 'tensorflow==2.7.0\nnumpy==1.21.2\n' }
-        ]
-      }
-    }
+    template: '# Add your Python code here\n',
+    filename: 'script.py'
   },
   typescript: {
     name: 'TypeScript',
     sections: ['Frontend', 'Backend', 'Fullstack', 'React', 'Node.js'],
-    fileTemplates: {
-      Frontend: {
-        files: [
-          { name: 'index.html', content: '<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Exercise</title>\n    <link rel="stylesheet" href="styles.css">\n</head>\n<body>\n    <div id="app"></div>\n    <script src="dist/script.js"></script>\n</body>\n</html>' },
-          { name: 'src/script.ts', content: '// Add your TypeScript code here\n' },
-          { name: 'styles.css', content: '/* Add your styles here */\n' },
-          { name: 'tsconfig.json', content: '{\n  "compilerOptions": {\n    "target": "es5",\n    "module": "commonjs",\n    "outDir": "./dist",\n    "strict": true,\n    "esModuleInterop": true,\n    "skipLibCheck": true,\n    "forceConsistentCasingInFileNames": true\n  }\n}' }
-        ]
-      }
-    }
+    template: '// Add your TypeScript code here\n',
+    filename: 'script.ts'
   },
   rust: {
     name: 'Rust',
     sections: ['CLI', 'Web Server', 'Systems Programming', 'Data Structures', 'Algorithms'],
-    fileTemplates: {
-      CLI: {
-        files: [
-          { name: 'Cargo.toml', content: '[package]\nname = "exercise"\nversion = "0.1.0"\nedition = "2021"\n\n[dependencies]\nclap = "3.0"\n' },
-          { name: 'src/main.rs', content: 'fn main() {\n    println!("Hello, world!");\n}\n' }
-        ]
-      }
-    }
+    template: '// Add your Rust code here\n',
+    filename: 'main.rs'
   },
   go: {
     name: 'Go',
     sections: ['Backend', 'CLI', 'Web Services', 'Data Structures', 'Algorithms'],
-    fileTemplates: {
-      Backend: {
-        files: [
-          { name: 'main.go', content: 'package main\n\nimport (\n\t"fmt"\n\t"net/http"\n)\n\nfunc main() {\n\thttp.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {\n\t\tfmt.Fprintf(w, "Hello, World!")\n\t})\n\n\tfmt.Println("Server starting on :8080")\n\thttp.ListenAndServe(":8080", nil)\n}\n' },
-          { name: 'go.mod', content: 'module exercise\n\ngo 1.17\n' }
-        ]
-      }
-    }
+    template: '// Add your Go code here\n',
+    filename: 'main.go'
   }
 };
+
+// Function to validate API key
+async function validateApiKey(apiKey) {
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    await model.generateContent("test");
+    return true;
+  } catch (error) {
+    console.log(chalk.red('API Key validation error:', error.message));
+    return false;
+  }
+}
+
+// Function to get valid API key
+async function getValidApiKey() {
+  while (true) {
+    const { apiKey } = await inquirer.prompt([
+      {
+        type: 'password',
+        name: 'apiKey',
+        message: 'Please enter your Gemini API key:',
+        validate: input => input.length > 0 ? true : 'API key is required'
+      }
+    ]);
+
+    console.log(chalk.yellow('\nValidating API key...'));
+    if (await validateApiKey(apiKey)) {
+      return apiKey;
+    }
+    console.log(chalk.red('Invalid API key. Please try again.'));
+  }
+}
 
 // Function to check and setup API key
 async function checkAndSetupApiKey() {
   try {
-    // Check if .env file exists
     const envPath = path.join(process.cwd(), '.env');
+    let apiKey;
+
+    // Try to load existing .env file
     try {
-      await fs.access(envPath);
-      // Load and check if API key exists
-      require('dotenv').config();
-      if (!process.env.GEMINI_API_KEY) {
-        throw new Error('No API key found');
+      const envConfig = dotenv.config({ path: envPath });
+      
+      if (envConfig.error) {
+        throw new Error('No .env file');
+      }
+
+      apiKey = process.env.GEMINI_API_KEY;
+      console.log(chalk.blue('Current API Key:', apiKey ? '****' + apiKey.slice(-4) : 'not found'));
+
+      // Validate existing API key
+      if (!apiKey || !(await validateApiKey(apiKey))) {
+        console.log(chalk.yellow('\nInvalid or missing API key. Let\'s set it up!\n'));
+        apiKey = await getValidApiKey();
+        await fs.writeFile(envPath, `GEMINI_API_KEY=${apiKey}`);
+        process.env.GEMINI_API_KEY = apiKey;
+        console.log(chalk.green('\nAPI key saved successfully!\n'));
+      } else {
+        console.log(chalk.green('API key validated successfully!'));
       }
     } catch (error) {
-      console.log(chalk.yellow('\nNo .env file or API key found. Let\'s set it up!\n'));
-      
-      const { apiKey } = await inquirer.prompt([
-        {
-          type: 'password',
-          name: 'apiKey',
-          message: 'Please enter your Gemini API key:',
-          validate: input => input.length > 0 ? true : 'API key is required'
-        }
-      ]);
-
-      // Create .env file with API key
+      console.log(chalk.yellow('\nNo .env file found. Let\'s set it up!\n'));
+      apiKey = await getValidApiKey();
       await fs.writeFile(envPath, `GEMINI_API_KEY=${apiKey}`);
       process.env.GEMINI_API_KEY = apiKey;
       console.log(chalk.green('\nAPI key saved successfully!\n'));
     }
+
+    // Double check that we have a valid key before proceeding
+    if (!process.env.GEMINI_API_KEY) {
+      throw new Error('API key not set after setup');
+    }
+
+    // Initialize Gemini AI with the validated key
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
   } catch (error) {
     console.error(chalk.red('Error setting up API key:', error.message));
     process.exit(1);
   }
 }
 
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
 async function generateExercises(language, section) {
-  const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+  const model = new GoogleGenerativeAI(process.env.GEMINI_API_KEY).getGenerativeModel({ model: 'gemini-pro' });
 
   const prompt = `Generate 5 coding exercises for ${language} focusing on ${section}. 
     Format each exercise in markdown as follows:
-    # Exercise N
-    ## Title
-    [exercise title]
     
-    ## Difficulty
-    [Easy/Medium/Hard]
+    # Exercise [number]
     
-    ## Description
-    [detailed problem description]
+    ## Problem Description
+    [A clear description of the problem]
     
     ## Requirements
-    - [requirement 1]
-    - [requirement 2]
+    - [Requirement 1]
+    - [Requirement 2]
+    - [Additional requirements]
     
-    ## Example Input/Output (if applicable)
-    \`\`\`
-    [example]
-    \`\`\`
+    ## Example
+    [Input/Output example or usage example]
     
-    Make the exercises practical and realistic, suitable for a developer learning ${language} with focus on ${section}.`;
+    ## Notes
+    [Any additional notes, hints, or constraints]`;
 
   try {
     const result = await model.generateContent(prompt);
@@ -219,29 +201,47 @@ async function generateExercises(language, section) {
   }
 }
 
+async function createExerciseFiles(language, section, exercises) {
+  try {
+    // Create main directory with date
+    const date = new Date().toISOString().split('T')[0];
+    const dirName = `${language.toLowerCase()}-${section.toLowerCase()}-${date}`;
+    const dirPath = path.join(process.cwd(), dirName);
+    await fs.mkdir(dirPath, { recursive: true });
+
+    // Write exercises to file
+    const exercisePath = path.join(dirPath, 'exercises.md');
+    await fs.writeFile(exercisePath, exercises);
+
+    // Create template files based on language
+    if (languageOptions[language] && languageOptions[language].template) {
+      for (let i = 1; i <= 5; i++) {
+        const exerciseDirPath = path.join(dirPath, `exercise-${i}`);
+        await fs.mkdir(exerciseDirPath, { recursive: true });
+        
+        const templateContent = languageOptions[language].template;
+        const templatePath = path.join(exerciseDirPath, languageOptions[language].filename);
+        await fs.writeFile(templatePath, templateContent);
+      }
+    }
+
+    console.log(chalk.green(`\nExercises saved to: ${dirName}/exercises.md`));
+  } catch (error) {
+    console.error(chalk.red('Error creating exercise files:', error.message));
+    throw error;
+  }
+}
+
 async function generateAnswer(exercise, language) {
-  const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+  const model = new GoogleGenerativeAI(process.env.GEMINI_API_KEY).getGenerativeModel({ model: 'gemini-pro' });
 
   const prompt = `Generate a detailed solution for the following ${language} exercise:
     ${exercise}
     
-    Format your response in markdown as follows:
-    # Solution
-    
-    ## Explanation
-    [Step-by-step explanation]
-    
-    ## Code Solution
-    \`\`\`${language.toLowerCase()}
-    [complete code solution]
-    \`\`\`
-    
-    ## Key Points
-    - [important consideration 1]
-    - [important consideration 2]
-    
-    ## Alternative Approaches
-    [if applicable, describe other ways to solve the problem]`;
+    Format your response in markdown with:
+    1. Solution explanation
+    2. Complete code with comments
+    3. Example usage or test cases`;
 
   try {
     const result = await model.generateContent(prompt);
@@ -249,60 +249,6 @@ async function generateAnswer(exercise, language) {
     return response.text();
   } catch (error) {
     console.error(chalk.red('Error generating answer:', error.message));
-    throw error;
-  }
-}
-
-async function createExerciseFiles(language, section, exercises) {
-  const dateStr = new Date().toISOString().split('T')[0];
-  const folderName = `${language.toLowerCase()}-${section.toLowerCase()}-${dateStr}`;
-  const folderPath = path.join(process.cwd(), folderName);
-
-  try {
-    // Create main exercise folder
-    await fs.mkdir(folderPath, { recursive: true });
-    
-    // Create exercises.md
-    await fs.writeFile(
-      path.join(folderPath, 'exercises.md'),
-      exercises
-    );
-
-    // Create language-specific files
-    const templates = languageOptions[language.toLowerCase()]?.fileTemplates?.[section];
-    if (templates) {
-      for (const file of templates.files) {
-        const filePath = path.join(folderPath, file.name);
-        // Create directories if the file is in a subdirectory
-        await fs.mkdir(path.dirname(filePath), { recursive: true });
-        await fs.writeFile(filePath, file.content);
-      }
-      console.log(chalk.green(`\nCreated template files for ${language} ${section} project`));
-    }
-    
-    console.log(chalk.green(`\nCreated exercise folder: ${folderName}`));
-    console.log(chalk.green('Exercises saved in exercises.md'));
-    
-    // Create numbered exercise folders
-    for (let i = 1; i <= 5; i++) {
-      const exercisePath = path.join(folderPath, `exercise-${i}`);
-      await fs.mkdir(exercisePath, { recursive: true });
-      
-      // Copy template files to each exercise folder if templates exist
-      if (templates) {
-        for (const file of templates.files) {
-          const filePath = path.join(exercisePath, file.name);
-          await fs.mkdir(path.dirname(filePath), { recursive: true });
-          await fs.writeFile(filePath, file.content);
-        }
-      }
-    }
-
-    // Render the markdown in the terminal
-    console.log('\n' + formatMarkdown(exercises));
-    
-  } catch (error) {
-    console.error(chalk.red('Error creating exercise files:', error.message));
     throw error;
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "code-daily-exercises",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "description": "A CLI tool to generate daily coding exercises using Gemini AI",
   "main": "index.js",
   "bin": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/onesmuskipchumba0/code-daily.git"
+    "url": "git+https://github.com/onesmuskipchumba0/code-daily-exercises.git"
   },
   "keywords": [
     "cli",
