@@ -279,35 +279,26 @@ async function main() {
     console.log(banner);
 
     while (true) {
-      const { action } = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'action',
-          message: 'What would you like to do?',
-          choices: [
-            { name: 'Generate Coding Exercises', value: 'generate' },
-            { name: 'Exit', value: 'exit' }
-          ]
-        }
-      ]);
-
-      if (action === 'exit') {
-        console.log(chalk.yellow('\nThank you for using Code Daily! Happy coding! 👋'));
-        process.exit(0);
-      }
-
       // Get language selection
       const { language } = await inquirer.prompt([
         {
           type: 'list',
           name: 'language',
           message: 'Choose a programming language:',
-          choices: Object.keys(languageOptions).map(lang => ({
-            name: languageOptions[lang].name,
-            value: lang
-          }))
+          choices: [
+            ...Object.keys(languageOptions).map(lang => ({
+              name: languageOptions[lang].name,
+              value: lang
+            })),
+            { name: 'Exit', value: 'exit' }
+          ]
         }
       ]);
+
+      if (language === 'exit') {
+        console.log(chalk.yellow('\nThank you for using Code Daily! Happy coding! 👋'));
+        process.exit(0);
+      }
 
       // Get section selection
       const { section } = await inquirer.prompt([
