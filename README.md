@@ -2,6 +2,8 @@
 
 🚀 A CLI tool that generates daily coding exercises using Google's Gemini AI. Get personalized coding exercises for different programming languages and domains.
 
+![Screenshot 2024-12-08 114636](https://github.com/user-attachments/assets/5436ef87-bbb6-4b53-85b5-f8d579704f15)
+
 ## Features
 
 - Generate 5 coding exercises for different programming languages
