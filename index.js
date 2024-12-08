@@ -278,67 +278,107 @@ async function main() {
     // Display banner
     console.log(banner);
 
-    // Get language selection
-    const { language } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'language',
-        message: 'Choose a programming language:',
-        choices: Object.keys(languageOptions).map(lang => ({
-          name: languageOptions[lang].name,
-          value: lang
-        }))
-      }
-    ]);
-
-    // Get section selection
-    const { section } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'section',
-        message: 'Choose a section:',
-        choices: languageOptions[language].sections
-      }
-    ]);
-
-    const spinner = ora('Generating exercises...').start();
-    const exercises = await generateExercises(language, section);
-    spinner.succeed('Exercises generated!');
-
-    await createExerciseFiles(language, section, exercises);
-
-    const { wantAnswer } = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'wantAnswer',
-        message: 'Would you like to see the solution for any exercise?',
-        default: false
-      }
-    ]);
-
-    if (wantAnswer) {
-      const { exerciseNumber } = await inquirer.prompt([
+    while (true) {
+      const { action } = await inquirer.prompt([
         {
-          type: 'input',
-          name: 'exerciseNumber',
-          message: 'Enter the exercise number (1-5):',
-          validate: input => {
-            const num = parseInt(input);
-            return num >= 1 && num <= 5 ? true : 'Please enter a number between 1 and 5';
-          }
+          type: 'list',
+          name: 'action',
+          message: 'What would you like to do?',
+          choices: [
+            { name: 'Generate Coding Exercises', value: 'generate' },
+            { name: 'Exit', value: 'exit' }
+          ]
         }
       ]);
 
-      const spinner = ora('Generating solution...').start();
-      const answer = await generateAnswer(exercises.split('Exercise ' + exerciseNumber)[1].split('Exercise')[0], language);
-      spinner.succeed('Solution generated!');
+      if (action === 'exit') {
+        console.log(chalk.yellow('\nThank you for using Code Daily! Happy coding! 👋'));
+        process.exit(0);
+      }
 
-      const answerPath = path.join(process.cwd(), `${language.toLowerCase()}-${section.toLowerCase()}-${new Date().toISOString().split('T')[0]}`, `solution-${exerciseNumber}.md`);
-      await fs.writeFile(answerPath, answer);
-      
-      console.log('\n' + chalk.yellow('Solution:'));
-      console.log(formatMarkdown(answer));
-      console.log(chalk.green(`\nSolution saved to: solution-${exerciseNumber}.md`));
+      // Get language selection
+      const { language } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'language',
+          message: 'Choose a programming language:',
+          choices: Object.keys(languageOptions).map(lang => ({
+            name: languageOptions[lang].name,
+            value: lang
+          }))
+        }
+      ]);
+
+      // Get section selection
+      const { section } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'section',
+          message: 'Choose a section:',
+          choices: languageOptions[language].sections
+        }
+      ]);
+
+      const spinner = ora('Generating exercises...').start();
+      const exercises = await generateExercises(language, section);
+      spinner.succeed('Exercises generated!');
+
+      await createExerciseFiles(language, section, exercises);
+
+      const { wantAnswer } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'wantAnswer',
+          message: 'Would you like to see the solution for any exercise?',
+          default: false
+        }
+      ]);
+
+      if (wantAnswer) {
+        const { exerciseNumber } = await inquirer.prompt([
+          {
+            type: 'input',
+            name: 'exerciseNumber',
+            message: 'Enter the exercise number (1-5):',
+            validate: input => {
+              const num = parseInt(input);
+              return num >= 1 && num <= 5 ? true : 'Please enter a number between 1 and 5';
+            }
+          }
+        ]);
+
+        const spinner = ora('Generating solution...').start();
+        const answer = await generateAnswer(exercises.split('Exercise ' + exerciseNumber)[1].split('Exercise')[0], language);
+        spinner.succeed('Solution generated!');
+
+        const answerPath = path.join(process.cwd(), `${language.toLowerCase()}-${section.toLowerCase()}-${new Date().toISOString().split('T')[0]}`, `solution-${exerciseNumber}.md`);
+        await fs.writeFile(answerPath, answer);
+        
+        console.log('\n' + chalk.yellow('Solution:'));
+        console.log(formatMarkdown(answer));
+        console.log(chalk.green(`\nSolution saved to: solution-${exerciseNumber}.md`));
+      }
+
+      // Ask if user wants to continue or exit
+      const { continueUsing } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'continueUsing',
+          message: 'What would you like to do next?',
+          choices: [
+            { name: 'Generate More Exercises', value: 'continue' },
+            { name: 'Exit', value: 'exit' }
+          ]
+        }
+      ]);
+
+      if (continueUsing === 'exit') {
+        console.log(chalk.yellow('\nThank you for using Code Daily! Happy coding! 👋'));
+        process.exit(0);
+      }
+
+      // Add a visual separator between sessions
+      console.log(chalk.gray('\n───────────────────────────────────\n'));
     }
 
   } catch (error) {
