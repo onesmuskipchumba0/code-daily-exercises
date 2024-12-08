@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '.env') });
 const { Command } = require('commander');
 const inquirer = require('inquirer');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -146,6 +145,41 @@ const languageOptions = {
   }
 };
 
+// Function to check and setup API key
+async function checkAndSetupApiKey() {
+  try {
+    // Check if .env file exists
+    const envPath = path.join(process.cwd(), '.env');
+    try {
+      await fs.access(envPath);
+      // Load and check if API key exists
+      require('dotenv').config();
+      if (!process.env.GEMINI_API_KEY) {
+        throw new Error('No API key found');
+      }
+    } catch (error) {
+      console.log(chalk.yellow('\nNo .env file or API key found. Let\'s set it up!\n'));
+      
+      const { apiKey } = await inquirer.prompt([
+        {
+          type: 'password',
+          name: 'apiKey',
+          message: 'Please enter your Gemini API key:',
+          validate: input => input.length > 0 ? true : 'API key is required'
+        }
+      ]);
+
+      // Create .env file with API key
+      await fs.writeFile(envPath, `GEMINI_API_KEY=${apiKey}`);
+      process.env.GEMINI_API_KEY = apiKey;
+      console.log(chalk.green('\nAPI key saved successfully!\n'));
+    }
+  } catch (error) {
+    console.error(chalk.red('Error setting up API key:', error.message));
+    process.exit(1);
+  }
+}
+
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -277,6 +311,9 @@ async function main() {
   try {
     // Display banner
     console.log(banner);
+
+    // Check and setup API key before proceeding
+    await checkAndSetupApiKey();
 
     while (true) {
       // Get language selection
