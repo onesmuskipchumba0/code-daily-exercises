@@ -58,32 +58,246 @@ const languageOptions = {
   javascript: {
     name: 'JavaScript',
     sections: ['Frontend', 'Backend', 'Fullstack', 'Data Structures', 'Algorithms'],
-    template: '// Add your JavaScript code here\n',
-    filename: 'script.js'
+    templates: {
+      Frontend: [
+        {
+          name: 'index.html',
+          content: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise Solution</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app"></div>
+    <script src="script.js"></script>
+</body>
+</html>`
+        },
+        {
+          name: 'styles.css',
+          content: `/* Exercise styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+#app {
+    max-width: 800px;
+    margin: 0 auto;
+}`
+        },
+        {
+          name: 'script.js',
+          content: `// Your JavaScript solution here
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize your app
+    console.log('App started');
+});`
+        }
+      ],
+      Backend: [
+        {
+          name: 'server.js',
+          content: `const express = require('express');
+const app = express();
+
+app.use(express.json());
+
+// Your routes here
+app.get('/', (req, res) => {
+    res.json({ message: 'Server is running' });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(\`Server running on port \${PORT}\`));`
+        },
+        {
+          name: 'package.json',
+          content: `{
+  "name": "exercise-solution",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}`
+        }
+      ],
+      Fullstack: [
+        {
+          name: 'frontend/index.html',
+          content: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise Solution</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app"></div>
+    <script src="script.js"></script>
+</body>
+</html>`
+        },
+        {
+          name: 'frontend/styles.css',
+          content: `/* Exercise styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+#app {
+    max-width: 800px;
+    margin: 0 auto;
+}`
+        },
+        {
+          name: 'frontend/script.js',
+          content: `// Your frontend JavaScript here
+const API_URL = 'http://localhost:3000';
+
+async function fetchData() {
+    try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        console.log(data);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}`
+        },
+        {
+          name: 'backend/server.js',
+          content: `const express = require('express');
+const cors = require('cors');
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+// Your routes here
+app.get('/', (req, res) => {
+    res.json({ message: 'Server is running' });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(\`Server running on port \${PORT}\`));`
+        },
+        {
+          name: 'backend/package.json',
+          content: `{
+  "name": "exercise-backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}`
+        }
+      ]
+    }
   },
   python: {
     name: 'Python',
-    sections: ['Backend', 'Data Science', 'Algorithms', 'Machine Learning', 'Web Development'],
-    template: '# Add your Python code here\n',
-    filename: 'script.py'
-  },
-  typescript: {
-    name: 'TypeScript',
-    sections: ['Frontend', 'Backend', 'Fullstack', 'React', 'Node.js'],
-    template: '// Add your TypeScript code here\n',
-    filename: 'script.ts'
-  },
-  rust: {
-    name: 'Rust',
-    sections: ['CLI', 'Web Server', 'Systems Programming', 'Data Structures', 'Algorithms'],
-    template: '// Add your Rust code here\n',
-    filename: 'main.rs'
-  },
-  go: {
-    name: 'Go',
-    sections: ['Backend', 'CLI', 'Web Services', 'Data Structures', 'Algorithms'],
-    template: '// Add your Go code here\n',
-    filename: 'main.go'
+    sections: ['Backend', 'Data Science', 'Machine Learning', 'Algorithms', 'Web Development'],
+    templates: {
+      Backend: [
+        {
+          name: 'app.py',
+          content: `from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return jsonify({"message": "Hello, World!"})
+
+if __name__ == '__main__':
+    app.run(debug=True)`
+        },
+        {
+          name: 'requirements.txt',
+          content: `flask==2.0.1
+python-dotenv==0.19.0`
+        }
+      ],
+      'Data Science': [
+        {
+          name: 'analysis.py',
+          content: `import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Your data analysis code here
+def analyze_data():
+    pass
+
+if __name__ == '__main__':
+    analyze_data()`
+        },
+        {
+          name: 'requirements.txt',
+          content: `pandas==1.3.3
+numpy==1.21.2
+matplotlib==3.4.3`
+        }
+      ],
+      'Machine Learning': [
+        {
+          name: 'model.py',
+          content: `import tensorflow as tf
+import numpy as np
+from sklearn.model_selection import train_test_split
+
+# Your ML model code here
+def build_model():
+    pass
+
+if __name__ == '__main__':
+    build_model()`
+        },
+        {
+          name: 'requirements.txt',
+          content: `tensorflow==2.7.0
+numpy==1.21.2
+scikit-learn==0.24.2`
+        }
+      ]
+    }
   }
 };
 
@@ -213,23 +427,80 @@ async function createExerciseFiles(language, section, exercises) {
     const exercisePath = path.join(dirPath, 'exercises.md');
     await fs.writeFile(exercisePath, exercises);
 
-    // Create template files based on language
-    if (languageOptions[language] && languageOptions[language].template) {
-      for (let i = 1; i <= 5; i++) {
-        const exerciseDirPath = path.join(dirPath, `exercise-${i}`);
-        await fs.mkdir(exerciseDirPath, { recursive: true });
-        
-        const templateContent = languageOptions[language].template;
-        const templatePath = path.join(exerciseDirPath, languageOptions[language].filename);
-        await fs.writeFile(templatePath, templateContent);
+    // Create exercise directories with templates
+    const templates = languageOptions[language.toLowerCase()]?.templates?.[section] || [];
+    
+    for (let i = 1; i <= 5; i++) {
+      const exerciseDirPath = path.join(dirPath, `exercise-${i}`);
+      await fs.mkdir(exerciseDirPath, { recursive: true });
+      
+      // Create template files
+      for (const template of templates) {
+        const filePath = path.join(exerciseDirPath, template.name);
+        await fs.mkdir(path.dirname(filePath), { recursive: true });
+        await fs.writeFile(filePath, template.content);
       }
     }
 
     console.log(chalk.green(`\nExercises saved to: ${dirName}/exercises.md`));
+
+    // Ask how to open the exercise
+    const { openWith } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'openWith',
+        message: 'How would you like to open the exercises?',
+        choices: [
+          { name: 'Visual Studio Code', value: 'vscode' },
+          { name: 'Notepad', value: 'notepad' },
+          { name: 'File Explorer', value: 'explorer' },
+          { name: 'Don\'t open', value: 'none' }
+        ]
+      }
+    ]);
+
+    if (openWith !== 'none') {
+      await openExercise(dirPath, openWith);
+    }
+
   } catch (error) {
     console.error(chalk.red('Error creating exercise files:', error.message));
     throw error;
   }
+}
+
+async function openExercise(dirPath, editor) {
+  try {
+    switch (editor.toLowerCase()) {
+      case 'vscode':
+        await runCommand('code', dirPath, ['.']);
+        break;
+      case 'notepad':
+        // Open the main file in notepad
+        const files = await fs.readdir(dirPath);
+        if (files.length > 0) {
+          await runCommand('notepad', dirPath, [files[0]]);
+        }
+        break;
+      case 'explorer':
+        await runCommand('explorer', dirPath, ['.']);
+        break;
+      default:
+        console.log(chalk.yellow(`Editor "${editor}" not supported. Opening in explorer...`));
+        await runCommand('explorer', dirPath, ['.']);
+    }
+  } catch (error) {
+    console.error(chalk.red(`Error opening exercise: ${error.message}`));
+  }
+}
+
+async function runCommand(command, cwd, args) {
+  const { spawn } = require('child_process');
+  return new Promise((resolve, reject) => {
+    const process = spawn(command, args, { cwd, shell: true });
+    process.on('error', reject);
+    process.on('close', resolve);
+  });
 }
 
 async function generateAnswer(exercise, language) {
