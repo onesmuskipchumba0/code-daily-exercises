@@ -8,6 +8,18 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const chalk = require('chalk');
 const ora = require('ora');
 const fs = require('fs').promises;
+const marked = require('marked');
+const TerminalRenderer = require('marked-terminal');
+
+// Configure marked to use the terminal renderer
+marked.setOptions({
+  renderer: new TerminalRenderer({
+    code: chalk.yellow,
+    blockquote: chalk.gray.italic,
+    table: chalk.white,
+    paragraph: chalk.white
+  })
+});
 
 const program = new Command();
 
@@ -111,12 +123,25 @@ async function generateExercises(language, section) {
   const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
   const prompt = `Generate 5 coding exercises for ${language} focusing on ${section}. 
-    Format each exercise as follows:
-    Exercise N:
-    Title: [exercise title]
-    Difficulty: [Easy/Medium/Hard]
-    Description: [detailed problem description]
-    Requirements: [specific requirements]
+    Format each exercise in markdown as follows:
+    # Exercise N
+    ## Title
+    [exercise title]
+    
+    ## Difficulty
+    [Easy/Medium/Hard]
+    
+    ## Description
+    [detailed problem description]
+    
+    ## Requirements
+    - [requirement 1]
+    - [requirement 2]
+    
+    ## Example Input/Output (if applicable)
+    \`\`\`
+    [example]
+    \`\`\`
     
     Make the exercises practical and realistic, suitable for a developer learning ${language} with focus on ${section}.`;
 
@@ -136,11 +161,23 @@ async function generateAnswer(exercise, language) {
   const prompt = `Generate a detailed solution for the following ${language} exercise:
     ${exercise}
     
-    Provide:
-    1. A step-by-step explanation
-    2. The complete code solution
-    3. Comments explaining the key parts
-    4. Any important considerations or alternative approaches`;
+    Format your response in markdown as follows:
+    # Solution
+    
+    ## Explanation
+    [Step-by-step explanation]
+    
+    ## Code Solution
+    \`\`\`${language.toLowerCase()}
+    [complete code solution]
+    \`\`\`
+    
+    ## Key Points
+    - [important consideration 1]
+    - [important consideration 2]
+    
+    ## Alternative Approaches
+    [if applicable, describe other ways to solve the problem]`;
 
   try {
     const result = await model.generateContent(prompt);
@@ -196,6 +233,9 @@ async function createExerciseFiles(language, section, exercises) {
         }
       }
     }
+
+    // Render the markdown in the terminal
+    console.log('\n' + marked(exercises));
     
   } catch (error) {
     console.error(chalk.red('Error creating exercise files:', error.message));
@@ -234,8 +274,6 @@ async function main() {
 
     await createExerciseFiles(language, section, exercises);
 
-    console.log('\n' + chalk.cyan(exercises) + '\n');
-
     const { wantAnswer } = await inquirer.prompt([
       {
         type: 'confirm',
@@ -266,7 +304,7 @@ async function main() {
       await fs.writeFile(answerPath, answer);
       
       console.log('\n' + chalk.yellow('Solution:'));
-      console.log(chalk.cyan(answer));
+      console.log(marked(answer));
       console.log(chalk.green(`\nSolution saved to: solution-${exerciseNumber}.md`));
     }
 
