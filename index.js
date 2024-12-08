@@ -316,16 +316,22 @@ async function main() {
 
       await createExerciseFiles(language, section, exercises);
 
-      const { wantAnswer } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'wantAnswer',
-          message: 'Would you like to see the solution for any exercise?',
-          default: false
-        }
-      ]);
+      let viewingSolutions = true;
+      while (viewingSolutions) {
+        const { wantAnswer } = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'wantAnswer',
+            message: 'Would you like to see a solution for any exercise?',
+            default: false
+          }
+        ]);
 
-      if (wantAnswer) {
+        if (!wantAnswer) {
+          viewingSolutions = false;
+          break;
+        }
+
         const { exerciseNumber } = await inquirer.prompt([
           {
             type: 'input',
