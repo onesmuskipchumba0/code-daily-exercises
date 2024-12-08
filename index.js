@@ -8,22 +8,52 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const chalk = require('chalk');
 const ora = require('ora');
 const fs = require('fs').promises;
-const marked = require('marked');
-const TerminalRenderer = require('marked-terminal');
-
-// Configure marked to use the terminal renderer
-marked.setOptions({
-  renderer: new TerminalRenderer({
-    code: chalk.yellow,
-    blockquote: chalk.gray.italic,
-    table: chalk.white,
-    paragraph: chalk.white
-  })
-});
+const MarkdownIt = require('markdown-it');
+const md = new MarkdownIt();
+const figlet = require('figlet');
 
 const program = new Command();
 
-// Language configurations with file templates
+// ASCII Art Banner
+const banner = `
+${chalk.cyan(figlet.textSync('Code Daily', {
+  font: 'Standard',
+  horizontalLayout: 'full'
+}))}
+
+${chalk.yellow('🚀 Daily Coding Exercise Generator')}
+${chalk.gray('───────────────────────────────────')}
+
+${chalk.white('Author:')} ${chalk.green('Onesmus Bett')}
+${chalk.white('GitHub:')} ${chalk.blue('https://github.com/onesmuskipchumba0')}
+${chalk.white('Email:')}  ${chalk.blue('onesmuskipchumba5@gmail.com')}
+
+${chalk.gray('───────────────────────────────────')}
+`;
+
+// Helper function to format markdown output
+function formatMarkdown(text) {
+  const html = md.render(text);
+  // Simple HTML to terminal formatting
+  return html
+    .replace(/<h1.*?>(.*?)<\/h1>/g, chalk.bold.underline.green('\n$1\n'))
+    .replace(/<h2.*?>(.*?)<\/h2>/g, chalk.bold.yellow('\n$1\n'))
+    .replace(/<h3.*?>(.*?)<\/h3>/g, chalk.bold.cyan('\n$1\n'))
+    .replace(/<code>(.*?)<\/code>/g, chalk.yellow('$1'))
+    .replace(/<pre><code.*?>(.*?)<\/code><\/pre>/gs, (_, code) => chalk.yellow('\n' + code.trim() + '\n'))
+    .replace(/<ul>(.*?)<\/ul>/gs, '$1')
+    .replace(/<li>(.*?)<\/li>/g, '  • $1')
+    .replace(/<p>(.*?)<\/p>/g, '\n$1\n')
+    .replace(/<em>(.*?)<\/em>/g, chalk.italic('$1'))
+    .replace(/<strong>(.*?)<\/strong>/g, chalk.bold('$1'))
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/<[^>]*>/g, '') // Remove any remaining HTML tags
+    .trim();
+}
+
 const languageOptions = {
   javascript: {
     name: 'JavaScript',
@@ -235,7 +265,7 @@ async function createExerciseFiles(language, section, exercises) {
     }
 
     // Render the markdown in the terminal
-    console.log('\n' + marked(exercises));
+    console.log('\n' + formatMarkdown(exercises));
     
   } catch (error) {
     console.error(chalk.red('Error creating exercise files:', error.message));
@@ -245,6 +275,9 @@ async function createExerciseFiles(language, section, exercises) {
 
 async function main() {
   try {
+    // Display banner
+    console.log(banner);
+
     // Get language selection
     const { language } = await inquirer.prompt([
       {
@@ -304,7 +337,7 @@ async function main() {
       await fs.writeFile(answerPath, answer);
       
       console.log('\n' + chalk.yellow('Solution:'));
-      console.log(marked(answer));
+      console.log(formatMarkdown(answer));
       console.log(chalk.green(`\nSolution saved to: solution-${exerciseNumber}.md`));
     }
 
